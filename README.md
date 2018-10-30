@@ -76,7 +76,7 @@ http://scikit-learn.org/stable/
 
 5. https://habr.com/company/ods/blog/322626/
 
-6. Решение первого домашнего задания: https://drive.google.com/drive/folders/1aclnjcgsI79adtqJuENxJ89JvK-lSNIy
+6. Решение задания с семинара (knn): https://drive.google.com/drive/folders/1aclnjcgsI79adtqJuENxJ89JvK-lSNIy
 7. 
 
 Прочее
