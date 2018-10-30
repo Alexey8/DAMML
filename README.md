@@ -78,6 +78,9 @@ http://scikit-learn.org/stable/
 
 6. Решение задания с семинара (knn): https://drive.google.com/drive/folders/1aclnjcgsI79adtqJuENxJ89JvK-lSNIy
 
+7. https://nbviewer.jupyter.org/urls/dl.dropbox.com/s/td55s954nm3lvus/demonstration_decision_tree.ipynb
+
+8. https://nbviewer.jupyter.org/urls/dl.dropbox.com/s/syjbrduvvxmky3y/random_forest_tutorial.ipynb
 Прочее
 https://www.kaggle.com/zubairahmed/79-63-acc-with-xgboost-on-pima-indian-diabetes
 https://www.kaggle.com/uciml/pima-indians-diabetes-database
