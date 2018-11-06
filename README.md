@@ -47,6 +47,8 @@ XGBoost
 2. Препроцессинг данных
 3. Выбор темы для финального проекта
 
+https://drive.google.com/drive/folders/18S595O0FAxosG5ME0TQOqziciw8vNeTc?usp=sharing
+
 Семинар:
 Полный цикл анализа данных
 
