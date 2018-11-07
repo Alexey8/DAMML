@@ -1,0 +1,258 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[6]:
+
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from copy import deepcopy
+get_ipython().run_line_magic('matplotlib', 'inline')
+
+
+# ## SKLearn
+
+# (почти) каждый класс в SKLearn имеет следующие методы:
+
+# In[8]:
+
+
+class KNN():
+    def __init__(self, n_neighbors=5, p=2, metric='minkowski'):
+        ...
+    
+    def fit(self, X_train, y_train):
+        ...
+        
+    def predict(self, X_test):
+        ...
+        
+    def predict_proba(self, X_test):
+        ...
+
+
+# (у регрессий нет predict_proba, есть только predict)
+
+# In[10]:
+
+
+from sklearn.neighbors import KNeighborsClassifier
+
+my_knn = KNN(k=<choose your favourite>)
+sklearn_knn = KNeighborsClassifier(k=<choose your favourite>)
+
+
+# ## House pricing
+
+# https://www.kaggle.com/c/house-prices-advanced-regression-techniques
+
+# In[11]:
+
+
+train_data = pd.read_csv("train_housing.csv")
+train_data.head()
+
+
+# In[12]:
+
+
+Y_train = train_data[['SalePrice']]
+X_train = train_data.drop("SalePrice", axis=1)
+
+
+# ### Feature Processing
+
+# In[13]:
+
+
+def binarize(data, columns):
+    """
+    binarize feature
+    
+    data: pd.csv dataset
+    columns: list of cstegorical columns to process
+    """
+    binarized_data = deepcopy(data)
+    for column in columns:
+        unique_items = set(data[column])
+        for unique_item in unique_items:
+            new_column = []
+            for item in data[column]:
+                new_column.append(int(item==unique_item))
+            binarized_data[column+'_'+unique_item] = new_column
+        binarized_data.drop(column, axis=1, inplace=True)
+    return binarized_data
+
+
+# In[14]:
+
+
+cat_features = [i[0] for i in dict(X_train.dtypes).items() if 'obj' in str(i[1])]
+cat_features
+
+
+# In[15]:
+
+
+from sklearn.preprocessing import LabelEncoder
+for c in cat_features:
+    X_train[c] = LabelEncoder().fit_transform(X_train[c].fillna('_'))
+X_train = X_train.fillna(0)
+
+
+# ### Linear Regression
+# 
+# http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html
+
+# In[16]:
+
+
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import cross_val_score
+from sklearn.preprocessing import StandardScaler
+
+
+# In[86]:
+
+
+lr = LinearRegression()
+sc = StandardScaler()
+
+X_train_sc = sc.fit_transform(X_train)
+
+cross_val_score(lr, X_train_sc, Y_train, scoring='neg_mean_squared_error') 
+
+
+# Посмотрим, какие коэффициенты получились у линейной регрессии:
+
+# In[87]:
+
+
+lr.fit(X_train, Y_train)
+lr.coef_
+
+
+# Посмотрим также на корреляцию признаков:
+
+# In[88]:
+
+
+plt.subplots(figsize=(10,10))
+# encoded_data, encoders = number_encode_features(df)
+sns.heatmap(train_data.corr(), square=True)
+plt.show()
+
+
+# ## Предсказание сердечно-сосудистых заболеваний
+
+# https://mlbootcamp.ru/round/12/sandbox/
+
+# In[404]:
+
+
+train_data = pd.read_csv("train_med.csv", delimiter=';')
+train_data.head()
+
+
+# In[405]:
+
+
+X_train, Y_train = np.array(train_data.drop("cardio", axis=1)), np.array(train_data['cardio'])
+
+
+# In[378]:
+
+
+from sklearn.ensemble import RandomForestClassifier
+
+rf = RandomForestClassifier(n_estimators=100)
+cross_val_score(rf, X_train, Y_train, scoring='accuracy') 
+
+
+# In[388]:
+
+
+rf.fit(X_train, Y_train)
+
+importances = rf.feature_importances_
+std = np.std([tree.feature_importances_ for tree in rf.estimators_], axis=0)
+indices = np.argsort(importances)[::-1]
+
+plt.figure(figsize=(20, 8))
+plt.title("Feature importances")
+plt.bar(range(X_train.shape[1]), importances[indices],
+       color="r", yerr=std[indices], align="center")
+plt.xticks(range(X_train.shape[1]), train_data.drop("cardio", axis=1).columns[indices])
+plt.xlim([-1, X_train.shape[1]])
+plt.show()
+
+
+# In[390]:
+
+
+from sklearn.grid_search import GridSearchCV
+
+rf = RandomForestClassifier(n_estimators=100)
+params = {
+    'n_estimators': [50, 100, 500]
+}
+gsv = GridSearchCV(estimator=rf, param_grid=params, scoring='accuracy', cv=3, verbose=1)
+gsv.fit(X_train, Y_train)
+
+
+# In[391]:
+
+
+print(gsv.best_params_, gsv.best_score_)
+
+
+# ### Model Ensembles
+
+# Мы можем предсказывать не класс, а вероятности классов:
+
+# In[412]:
+
+
+train_data = pd.read_csv("train_med.csv", delimiter=';')
+
+X_train, Y_train = np.array(train_data.drop("cardio", axis=1)), np.array(train_data['cardio'])
+
+
+# In[413]:
+
+
+X_train, X_test, Y_train, Y_test = train_test_split(X_train, Y_train, test_size=0.15, random_state=37)
+
+
+# In[417]:
+
+
+rf = RandomForestClassifier(n_estimators=100).fit(X_train, Y_train)
+pred = rf.predict_proba(X_test)
+
+
+# In[420]:
+
+
+pred
+
+
+# In[4]:
+
+
+from sklearn.tree import DecisionTreeClassifier
+
+
+# In[ ]:
+
+
+estimator1 = RandomForestClassifier(n_estimators=100).fit(X_train, Y_train)
+estimator2 = DecisionTreeClassifier().fit(X_train, Y_train)
+
+estimator1.fit(X_train, Y_train)
+estimator2.fit(X_train, Y_train)
+
+pred1 = estimator1.predict_proba(X_test)[:, 1]
+pred2 = estimator2.predict_proba(X_test)[:, 1]
+
