@@ -73,7 +73,7 @@ https://drive.google.com/drive/folders/18S595O0FAxosG5ME0TQOqziciw8vNeTc?usp=sha
 
 ======Пятое занятие======
 
-Защита проектов + бонусная лекция
+Защита проектов
 
 ======Полезные материалы======
 
